@@ -143,6 +143,19 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 }
 .aba.ativa { color: var(--dourado); border-bottom-color: var(--dourado); }
 
+/* sub-abas (ex.: Agendados / Atendidos / Todos, dentro da Agenda) */
+.sub-abas { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.sub-aba {
+  flex: 1 1 auto; border: 1px solid var(--borda); background: var(--cards); color: var(--suave);
+  border-radius: 999px; padding: 10px 14px; font-weight: 700; font-size: 14px;
+}
+.sub-aba .cont {
+  display: inline-block; min-width: 22px; margin-left: 6px; padding: 1px 7px;
+  background: var(--fundo); border-radius: 999px; font-size: 12px; color: var(--suave);
+}
+.sub-aba.ativa { background: var(--cor); border-color: var(--cor); color: var(--cor-texto); }
+.sub-aba.ativa .cont { background: rgba(255,255,255,.65); color: var(--cor-texto); }
+
 /* -------------------------------- avisos -------------------------------- */
 .aviso { padding: 10px 16px; font-size: 14px; font-weight: 600; text-align: center; }
 .aviso.offline { background: #FFF4E5; color: #8A5A00; }
@@ -169,7 +182,7 @@ h2 { font-size: 18px; margin-bottom: 12px; padding-left: 10px; border-left: 4px 
 
 .etiqueta { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 8px; white-space: nowrap; }
 .et-agendado, .et-pendente { background: #EEF1F0; color: var(--suave); }
-.et-realizado, .et-pago { background: #E7F3EA; color: var(--verde); }
+.et-realizado, .et-pago, .et-atendido { background: #E7F3EA; color: var(--verde); }
 .et-cancelado { background: #FBEAEA; color: var(--vermelho); }
 
 .valor.receita { color: var(--verde); }
@@ -353,6 +366,11 @@ h2 { font-size: 18px; margin-bottom: 12px; padding-left: 10px; border-left: 4px 
       </div>
       <div class="cartao">
         <h2>Agendamentos e atendimentos</h2>
+        <div class="sub-abas" id="agenda-filtro">
+          <button type="button" class="sub-aba ativa" data-filtro-agenda="agendados">Agendados <span class="cont" id="cont-agendados">0</span></button>
+          <button type="button" class="sub-aba" data-filtro-agenda="atendidos">Atendidos <span class="cont" id="cont-atendidos">0</span></button>
+          <button type="button" class="sub-aba" data-filtro-agenda="todos">Todos <span class="cont" id="cont-todos">0</span></button>
+        </div>
         <input type="text" id="agenda-busca" placeholder="Buscar por cliente ou procedimento..." style="margin-bottom:8px">
         <div id="lista-agenda"></div>
       </div>
@@ -697,6 +715,7 @@ window.CONFIG = {
     lancamentos: [],
     procedimentos: [],
     itensAgenda: [],
+    filtroAgenda: 'agendados',
     ajustes: null,
     filtroMes: '',
     online: navigator.onLine,
@@ -1202,14 +1221,48 @@ window.CONFIG = {
 
   function renderAgenda() {
     var busca = ($('agenda-busca').value || '').toLowerCase();
-    var lista = state.agendamentos.filter(function (a) {
+    var filtro = state.filtroAgenda || 'agendados';
+    function ehAtendido(a) { return (a.status || '') === 'Atendido'; }
+    function ehCancelado(a) { return (a.status || '') === 'Cancelado'; }
+    function combina(a) {
       return (a.cliente_nome || '').toLowerCase().indexOf(busca) >= 0 ||
         (a.procedimento || '').toLowerCase().indexOf(busca) >= 0 ||
         nomesItens(a).toLowerCase().indexOf(busca) >= 0;
-    }).sort(function (a, b) { return (a.data + (a.horario || '')).localeCompare(b.data + (b.horario || '')); });
+    }
+
+    // Contadores das abas (consideram tudo, ignorando a busca).
+    var cAg = $('cont-agendados'), cAt = $('cont-atendidos'), cTo = $('cont-todos');
+    if (cAg) cAg.textContent = state.agendamentos.filter(function (a) { return !ehAtendido(a) && !ehCancelado(a); }).length;
+    if (cAt) cAt.textContent = state.agendamentos.filter(ehAtendido).length;
+    if (cTo) cTo.textContent = state.agendamentos.length;
+
+    // Marca a aba ativa.
+    var box = $('agenda-filtro');
+    if (box) [].forEach.call(box.querySelectorAll('.sub-aba'), function (b) {
+      b.classList.toggle('ativa', b.getAttribute('data-filtro-agenda') === filtro);
+    });
+
+    var lista = state.agendamentos.filter(function (a) {
+      if (!combina(a)) return false;
+      if (filtro === 'atendidos') return ehAtendido(a);
+      if (filtro === 'agendados') return !ehAtendido(a) && !ehCancelado(a);
+      return true;
+    });
+    if (filtro === 'atendidos') {
+      // Mais recentes primeiro.
+      lista.sort(function (a, b) { return (b.data + (b.horario || '')).localeCompare(a.data + (a.horario || '')); });
+    } else {
+      lista.sort(function (a, b) { return (a.data + (a.horario || '')).localeCompare(b.data + (b.horario || '')); });
+    }
 
     var el = $('lista-agenda');
-    if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhum agendamento.</div>'; return; }
+    if (!lista.length) {
+      el.innerHTML = '<div class="vazio">' +
+        (filtro === 'atendidos' ? 'Nenhum atendimento concluído.'
+         : filtro === 'agendados' ? 'Nenhum atendimento por atender.'
+         : 'Nenhum agendamento.') + '</div>';
+      return;
+    }
     el.innerHTML = lista.map(function (a) {
       var cls = 'et-' + String(a.status || 'agendado').toLowerCase();
       return '<div class="item"><div class="info">' +
@@ -1684,6 +1737,8 @@ window.CONFIG = {
     if (r.error) return toast('Erro ao salvar: ' + r.error.message);
     limparFormAgenda();
     await carregarTudo();
+    // Mostra o atendimento salvo logo na aba certa (Agendados/Atendidos/Todos).
+    if (state.filtroAgenda !== 'todos') state.filtroAgenda = (dados.status === 'Atendido') ? 'atendidos' : 'agendados';
     renderTudo();
     toast(id ? 'Atendimento atualizado!' : 'Atendimento salvo!');
   }
@@ -1900,6 +1955,8 @@ window.CONFIG = {
       var t = ev.target;
       if (!(t instanceof HTMLElement)) return;
       var d;
+      var sub = t.closest && t.closest('[data-filtro-agenda]');
+      if (sub) { state.filtroAgenda = sub.getAttribute('data-filtro-agenda'); renderAgenda(); return; }
       if ((d = t.dataset.cliente)) selecionarCliente(d);
       else if ((d = t.dataset.procedimento)) adicionarItem(d);
       else if ((d = t.dataset.editarCliente)) editarCliente(d);
