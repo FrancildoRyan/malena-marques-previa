@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Malena Marques — Nova Agenda (proposta)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rose:#F3B6B6;
+    --rose-dark:#DE9CA4;
+    --rose-soft:#FDEEEE;
+    --rose-soft2:#FBE0E0;
+    --gold:#C9A24B;
+    --gold-soft:#F7EDD3;
+    --bg:#FBF6F3;
+    --card:#FFFFFF;
+    --ink:#3A2C2E;
+    --muted:#9A8787;
+    --line:#F1E4E1;
+    --green:#2E7D32;
+    --green-soft:#E9F5EC;
+    --red:#C62828;
+    --red-soft:#FBEAEA;
+    --shadow:0 10px 30px -12px rgba(174,120,120,.35);
+    --radius:22px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 500px at 10% -10%, #FCE9E9 0%, rgba(252,233,233,0) 60%),
+      radial-gradient(900px 420px at 110% 0%, #F7EDD3 0%, rgba(247,237,211,0) 55%),
+      var(--bg);
+    min-height:100vh;
+    padding-bottom:120px;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px}
+
+  /* ------------------------------- topo ------------------------------- */
+  header.topo{
+    position:sticky;top:0;z-index:20;
+    backdrop-filter:blur(14px);
+    background:linear-gradient(135deg, rgba(251,231,231,.92), rgba(251,246,243,.88));
+    border-bottom:1px solid var(--line);
+  }
+  .topo-in{max-width:760px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
+  .logo{
+    width:46px;height:46px;border-radius:15px;flex:0 0 auto;
+    background:linear-gradient(140deg,var(--rose) 0%, var(--rose-dark) 55%, #C98C95 100%);
+    color:#fff;display:grid;place-items:center;
+    font-family:'Playfair Display',serif;font-size:24px;font-weight:700;
+    box-shadow:0 8px 18px -6px rgba(222,156,164,.9), inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .marca{flex:1;min-width:0}
+  .marca h1{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;letter-spacing:.2px;line-height:1.1}
+  .marca p{font-size:12px;color:var(--muted);margin-top:2px}
+  .avatar-me{
+    width:42px;height:42px;border-radius:50%;flex:0 0 auto;
+    background:var(--card);border:1px solid var(--line);
+    display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--rose-dark);
+    box-shadow:var(--shadow);
+  }
+
+  /* ------------------------------- hero ------------------------------- */
+  .hero{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:26px 0 18px}
+  .hero h2{font-family:'Playfair Display',serif;font-size:30px;font-weight:600;line-height:1.1}
+  .hero h2 span{color:var(--gold)}
+  .hero .sub{color:var(--muted);font-size:14px;margin-top:6px}
+  .hero .data{text-align:right;font-size:13px;color:var(--muted);white-space:nowrap}
+  .hero .data b{display:block;font-size:15px;color:var(--ink);font-weight:600}
+
+  /* ------------------------------ resumos ----------------------------- */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+  .stat{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 15px;
+    box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .stat .rot{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .stat .val{font-size:22px;font-weight:700;margin-top:6px;letter-spacing:-.02em}
+  .stat .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:1px}
+  .stat.ag .dot{background:var(--rose-dark)}
+  .stat.at .dot{background:var(--green)}
+  .stat.gr .dot{background:var(--gold)}
+  .stat::after{content:"";position:absolute;right:-30px;top:-30px;width:80px;height:80px;border-radius:50%;background:var(--rose-soft)}
+  .stat.at::after{background:var(--green-soft)}
+  .stat.gr::after{background:var(--gold-soft)}
+
+  /* ------------------------------- abas ------------------------------- */
+  .pills{display:flex;gap:10px;margin-bottom:16px}
+  .pill{
+    flex:1;border:1px solid var(--line);background:var(--card);border-radius:999px;
+    padding:12px 14px;font-weight:600;font-size:14px;color:var(--muted);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:.18s ease;box-shadow:0 4px 14px -10px rgba(174,120,120,.6);
+  }
+  .pill .cont{
+    min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:var(--bg);
+    display:inline-grid;place-items:center;font-size:12px;font-weight:700;color:var(--muted);
+  }
+  .pill.active{
+    background:linear-gradient(140deg,var(--rose),var(--rose-dark));
+    border-color:transparent;color:#fff;
+    box-shadow:0 12px 24px -10px rgba(222,156,164,1);
+  }
+  .pill.active .cont{background:rgba(255,255,255,.75);color:#8A4A54}
+
+  /* ------------------------------ busca ------------------------------- */
+  .busca{position:relative;margin-bottom:24px}
+  .busca svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);opacity:.45}
+  .busca input{
+    width:100%;border:1px solid var(--line);background:var(--card);border-radius:16px;
+    padding:15px 16px 15px 46px;font-size:15px;color:var(--ink);outline:none;
+    box-shadow:var(--shadow);font-family:inherit;
+  }
+  .busca input::placeholder{color:#C3B2B2}
+  .busca input:focus{border-color:var(--rose)}
+
+  /* ------------------------------ grupos ------------------------------ */
+  .grupo{margin-bottom:26px}
+  .grupo-titulo{
+    display:flex;align-items:center;gap:12px;margin:0 4px 12px;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--muted);
+  }
+  .grupo-titulo::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+  .grupo-titulo .dia{color:var(--gold)}
+
+  /* ------------------------------ cartões ----------------------------- */
+  .card{
+    position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 16px 16px 22px;margin-bottom:12px;box-shadow:var(--shadow);
+    display:flex;gap:14px;align-items:center;
+    transition:.18s ease;
+  }
+  .card:hover{transform:translateY(-2px);box-shadow:0 18px 34px -16px rgba(174,120,120,.6)}
+  .card::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:5px;border-radius:0 5px 5px 0;background:var(--rose)}
+  .card.feito::before{background:var(--green)}
+  .card.agora{background:linear-gradient(180deg,#FFF9F7,#FFFFFF);border-color:var(--rose-soft2)}
+
+  .hora{flex:0 0 62px;text-align:center}
+  .hora b{display:block;font-size:17px;font-weight:700;letter-spacing:-.01em}
+  .hora span{font-size:11px;color:var(--muted)}
+
+  .face{
+    flex:0 0 auto;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+    font-weight:700;font-size:14px;color:#8A4A54;background:var(--rose-soft);
+  }
+  .face.f2{color:#7A5A17;background:var(--gold-soft)}
+  .face.f3{color:#2E7D32;background:var(--green-soft)}
+  .face.f4{color:#6B4E8E;background:#EFE6F7}
+
+  .corpo{flex:1;min-width:0}
+  .linha1{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .linha1 h3{font-size:16px;font-weight:700;letter-spacing:-.01em}
+  .tag{
+    font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:4px 9px;border-radius:999px;background:var(--bg);color:var(--muted);
+  }
+  .tag.ag{background:var(--rose-soft);color:#B4666F}
+  .tag.feito{background:var(--green-soft);color:var(--green)}
+  .tag.salao{background:var(--gold-soft);color:#8A6A17}
+
+  .procs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+  .chip{
+    font-size:12px;font-weight:600;color:#8A4A54;background:var(--rose-soft);
+    padding:5px 10px;border-radius:10px;display:inline-flex;align-items:center;gap:6px;
+  }
+  .chip svg{opacity:.7}
+  .dur{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:5px}
+
+  .pag{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--muted)}
+  .pag .valor{font-size:15px;font-weight:700;color:var(--ink)}
+  .pag .liq{color:var(--green);font-weight:700}
+  .pag s{color:#C3B2B2}
+  .pag .desc{font-size:11px;color:var(--red);background:var(--red-soft);padding:2px 7px;border-radius:7px;font-weight:700}
+
+  .acoes{display:flex;flex-direction:column;gap:8px;flex:0 0 auto}
+  .btn-receber{
+    border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:12px;
+    color:#fff;background:linear-gradient(140deg,#5FB27C,#2E7D32);
+    padding:9px 14px;border-radius:12px;box-shadow:0 10px 18px -10px rgba(46,125,50,.9);
+    white-space:nowrap;
+  }
+  .btn-ghost{
+    border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;
+    font-family:inherit;font-weight:600;font-size:12px;padding:8px 14px;border-radius:12px;
+  }
+
+  /* ------------------------------- FAB -------------------------------- */
+  .fab{
+    position:fixed;right:22px;bottom:26px;z-index:30;
+    display:flex;align-items:center;gap:10px;
+    border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:15px;color:#fff;
+    background:linear-gradient(140deg,var(--rose-dark),#C98C95);
+    padding:16px 22px;border-radius:999px;
+    box-shadow:0 20px 36px -14px rgba(222,156,164,1);
+  }
+  .fab svg{flex:0 0 auto}
+
+  .rodape{text-align:center;color:#C3B2B2;font-size:12px;margin-top:30px}
+  .hide{display:none}
+
+  @media (max-width:560px){
+    .hero h2{font-size:25px}
+    .stats{grid-template-columns:1fr 1fr}
+    .stat.gr{grid-column:1/-1}
+    .card{flex-wrap:wrap}
+    .face{display:none}
+    .acoes{flex-direction:row;width:100%;justify-content:flex-end}
+    .hora{flex:0 0 52px}
+  }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-in">
+    <div class="logo">M</div>
+    <div class="marca">
+      <h1>Malena Marques</h1>
+      <p>Agenda, clientes e financeiro</p>
+    </div>
+    <div class="avatar-me">MM</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div>
+      <h2>Olá, Malena <span>✦</span></h2>
+      <p class="sub">Aqui está o seu dia e os próximos atendimentos.</p>
+    </div>
+    <div class="data">
+      Hoje
+      <b>sábado, 15 de nov.</b>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stat ag">
+      <div class="rot"><span class="dot"></span>Agendados</div>
+      <div class="val">2</div>
+    </div>
+    <div class="stat at">
+      <div class="rot"><span class="dot"></span>Atendidos</div>
+      <div class="val">7</div>
+    </div>
+    <div class="stat gr">
+      <div class="rot"><span class="dot"></span>A receber</div>
+      <div class="val">R$ 1.148,00</div>
+    </div>
+  </section>
+
+  <nav class="pills">
+    <button class="pill active" data-pane="agendados">Agendados <span class="cont">2</span></button>
+    <button class="pill" data-pane="atendidos">Atendidos <span class="cont">7</span></button>
+    <button class="pill" data-pane="todos">Todos <span class="cont">9</span></button>
+  </nav>
+
+  <div class="busca">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input type="text" placeholder="Buscar por cliente ou procedimento...">
+  </div>
+
+  <!-- ============================ AGENDADOS ============================ -->
+  <div id="pane-agendados">
+
+    <div class="grupo">
+      <div class="grupo-titulo">Hoje <span class="dia">• sábado, 15 de novembro</span></div>
+
+      <article class="card">
+        <div class="hora"><b>10:00</b><span>1h</span></div>
+        <div class="face">AA</div>
+        <div class="corpo">
+          <div class="linha1">
+            <h3>Alexandra Almeida</h3>
+            <span class="tag ag">Agendado</span>
+          </div>
+          <div class="procs">
+            <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg>Manutenção de acrílico</span>
+          </div>
+          <div class="pag">
+            <span class="tag salao">Pelo salão</span>
+            <span>Pix</span>
+            <span class="valor">R$ 230,00</span>
+            <span class="liq">você recebe R$ 161,00</span>
+          </div>
+        </div>
+        <div class="acoes">
+          <button class="btn-receber">Receber</button>
+          <button class="btn-ghost">Editar</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="hora"><b>13:00</b><span>45 min</span></div>
+        <div class="face f2">CT</div>
+        <div class="corpo">
+          <div class="linha1">
+            <h3>Claudia Tomé</h3>
+            <span class="tag ag">Agendado</span>
+          </div>
+          <div class="procs">
+            <span class="chip">Esmaltação em gel</span>
+          </div>
+          <div class="pag">
+            <span>Pix</span>
+            <span class="valor">R$ 60,00</span>
+          </div>
+        </div>
+        <div class="acoes">
+          <button class="btn-receber">Receber</button>
+          <button class="btn-ghost">Editar</button>
+        </div>
+      </article>
+
+      <article class="card agora">
+        <div class="hora"><b>15:30</b><span>2h45</span></div>
+        <div class="face f4">CS</div>
+        <div class="corpo">
+          <div class="linha1">
+            <h3>Carol Sombra</h3>
+            <span class="tag ag">Agendado</span>
+          </div>
+          <div class="procs">
+            <span class="chip">Alongamento em gel</span>
+            <span class="chip">Esmaltação em gel</span>
+            <span class="dur"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>2h45</span>
+          </div>
+          <div class="pag">
+            <span>Cartão de crédito 3x</span>
+            <s>R$ 240,00</s>
+            <span class="valor">R$ 216,00</span>
+            <span class="desc">−10%</span>
+            <span class="liq">você recebe R$ 200,90</span>
+          </div>
+        </div>
+        <div class="acoes">
+          <button class="btn-receber">Receber</button>
+          <button class="btn-ghost">Editar</button>
+        </div>
+      </article>
+    </div>
+
+    <div class="grupo">
+      <div class="grupo-titulo">Amanhã <span class="dia">• domingo, 16 de novembro</span></div>
+
+      <article class="card">
+        <div class="hora"><b>09:00</b><span>1h</span></div>
+        <div class="face">AS</div>
+        <div class="corpo">
+          <div class="linha1">
+            <h3>Andrielly Silva</h3>
+            <span class="tag ag">Agendado</span>
+          </div>
+          <div class="procs"><span class="chip">Manutenção de acrílico</span></div>
+          <div class="pag">
+            <span>Pix</span>
+            <span class="valor">R$ 230,00</span>
+          </div>
+        </div>
+        <div class="acoes">
+          <button class="btn-receber">Receber</button>
+          <button class="btn-ghost">Editar</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="hora"><b>11:00</b><span>1h</span></div>
+        <div class="face f2">TG</div>
+        <div class="corpo">
+          <div class="linha1">
+            <h3>Tatiana Gonçalves</h3>
+            <span class="tag ag">Agendado</span>
+          </div>
+          <div class="procs"><span class="chip">Manutenção de acrílico</span></div>
+          <div class="pag">
+            <span class="tag salao">Pelo salão</span>
+            <span>Pix</span>
+            <span class="valor">R$ 230,00</span>
+            <span class="liq">você recebe R$ 161,00</span>
+          </div>
+        </div>
+        <div class="acoes">
+          <button class="btn-receber">Receber</button>
+          <button class="btn-ghost">Editar</button>
+        </div>
+      </article>
+    </div>
+
+    <div class="rodape">Fim dos atendimentos agendados ✦</div>
+  </div>
+
+  <!-- ============================ ATENDIDOS ============================ -->
+  <div id="pane-atendidos" class="hide">
+
+    <div class="grupo">
+      <div class="grupo-titulo">Sexta <span class="dia">• 14 de novembro</span></div>
+
+      <article class="card feito">
+        <div class="hora"><b>09:00</b><span>2h30</span></div>
+        <div class="face f3">PM</div>
+        <div class="corpo">
+          <div class="linha1">
+            <h3>Patrícia Motta</h3>
+            <span class="tag feito">✓ Atendido</span>
+          </div>
+          <div class="procs"><span class="chip">Alongamento acrílico natural</span></div>
+          <div class="pag">
+            <span>Pix</span>
+            <span class="valor">R$ 340,00</span>
+            <span class="liq">recebido</span>
+          </div>
+        </div>
+        <div class="acoes"><button class="btn-ghost">Ver</button></div>
+      </article>
+
+      <article class="card feito">
+        <div class="hora"><b>14:00</b><span>2h30</span></div>
+        <div class="face f3">ED</div>
+        <div class="corpo">
+          <div class="linha1">
+            <h3>Emanuelle Desidério</h3>
+            <span class="tag feito">✓ Atendido</span>
+          </div>
+          <div class="procs"><span class="chip">Alongamento acrílico natural</span></div>
+          <div class="pag">
+            <span>Dinheiro</span>
+            <span class="valor">R$ 350,00</span>
+            <span class="liq">recebido</span>
+          </div>
+        </div>
+        <div class="acoes"><button class="btn-ghost">Ver</button></div>
+      </article>
+    </div>
+
+    <div class="grupo">
+      <div class="grupo-titulo">Quinta <span class="dia">• 13 de novembro</span></div>
+
+      <article class="card feito">
+        <div class="hora"><b>15:00</b><span>1h</span></div>
+        <div class="face f3">DM</div>
+        <div class="corpo">
+          <div class="linha1">
+            <h3>Débora Maia</h3>
+            <span class="tag feito">✓ Atendido</span>
+          </div>
+          <div class="procs"><span class="chip">Manutenção gel</span></div>
+          <div class="pag">
+            <span class="tag salao">Pelo salão</span>
+            <span>Pix</span>
+            <span class="valor">R$ 360,00</span>
+            <span class="liq">recebido R$ 252,00</span>
+          </div>
+        </div>
+        <div class="acoes"><button class="btn-ghost">Ver</button></div>
+      </article>
+    </div>
+
+    <div class="grupo">
+      <div class="grupo-titulo">Quarta <span class="dia">• 12 de novembro</span></div>
+
+      <article class="card feito">
+        <div class="hora"><b>10:00</b><span>1h</span></div>
+        <div class="face f3">MC</div>
+        <div class="corpo">
+          <div class="linha1">
+            <h3>Manoella Costa</h3>
+            <span class="tag feito">✓ Atendido</span>
+          </div>
+          <div class="procs"><span class="chip">Manutenção de acrílico</span></div>
+          <div class="pag">
+            <span>Cartão de crédito 3x</span>
+            <span class="valor">R$ 225,00</span>
+            <span class="liq">recebido R$ 209,27</span>
+          </div>
+        </div>
+        <div class="acoes"><button class="btn-ghost">Ver</button></div>
+      </article>
+    </div>
+
+    <div class="rodape">Fim do histórico ✦</div>
+  </div>
+
+  <!-- ============================== TODOS ============================== -->
+  <div id="pane-todos" class="hide">
+    <div class="grupo">
+      <div class="grupo-titulo">Tudo em um só lugar</div>
+      <p style="color:var(--muted);font-size:14px;line-height:1.6">
+        Nesta aba aparecem, misturados e em ordem de data, todos os atendimentos —
+        os agendados e os já atendidos.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<button class="fab">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  Novo atendimento
+</button>
+
+<script>
+  /* Permite abrir já numa aba específica: ...agenda-visual.html#atendidos */
+  (function () {
+    var alvo = (location.hash || '').replace('#', '');
+    if (['agendados', 'atendidos', 'todos'].indexOf(alvo) < 0) return;
+    document.querySelectorAll('.pill').forEach(function (x) {
+      x.classList.toggle('active', x.getAttribute('data-pane') === alvo);
+    });
+    ['agendados', 'atendidos', 'todos'].forEach(function (nome) {
+      document.getElementById('pane-' + nome).classList.toggle('hide', nome !== alvo);
+    });
+  })();
+</script>
+<script>
+  document.querySelectorAll('.pill').forEach(function (p) {
+    p.addEventListener('click', function () {
+      document.querySelectorAll('.pill').forEach(function (x) { x.classList.remove('active'); });
+      p.classList.add('active');
+      var alvo = p.getAttribute('data-pane');
+      ['agendados', 'atendidos', 'todos'].forEach(function (nome) {
+        document.getElementById('pane-' + nome).classList.toggle('hide', nome !== alvo);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
